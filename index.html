@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AetherPak: Distributed, Self-Managed Flatpak Repositories</title>
+  <meta name="description" content="A flexible hybrid OCI-static hosting model for self-managed Flatpak repositories on any static web host and OCI container registry.">
+  <meta property="og:title" content="AetherPak: Distributed, Self-Managed Flatpak Repositories">
+  <meta property="og:description" content="A flexible hybrid OCI-static hosting model for self-managed Flatpak repositories on any static web host and OCI container registry.">
+  <meta property="og:type" content="website">
+  <style>
+    :root {
+      --bg: #09090b; --card: #18181b; --border: #27272a;
+      --text: #f4f4f5; --text-muted: #a1a1aa;
+      --primary: #8b5cf6; --primary-glow: rgba(139,92,246,0.15); --success: #10b981;
+      --font-sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--text); font-family: var(--font-sans); line-height: 1.6; padding: 2rem 1rem 0; min-height: 100vh; overflow-x: hidden; position: relative; }
+    body::before { content: ''; position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: min(800px, 100%); height: 360px; background: radial-gradient(circle, rgba(139,92,246,0.10) 0%, rgba(9,9,11,0) 70%); z-index: -1; pointer-events: none; }
+    .container { max-width: 760px; margin: 0 auto; }
+    a { color: var(--primary); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    code { font-family: var(--font-mono); overflow-wrap: anywhere; }
+
+    header { text-align: center; margin: 1.5rem 0 3rem; animation: fadeIn 0.8s ease-out; }
+    .badge { display: inline-block; padding: 0.25rem 0.75rem; background: rgba(139,92,246,0.12); border: 1px solid rgba(139,92,246,0.3); border-radius: 9999px; font-size: 0.8rem; font-weight: 600; letter-spacing: 0.08em; color: var(--primary); margin-bottom: 1.25rem; box-shadow: 0 0 15px var(--primary-glow); }
+    h1 { font-size: 2.75rem; font-weight: 800; letter-spacing: -0.045em; line-height: 1.1; background: linear-gradient(to right, #fff, #d8b4fe); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .tagline { color: var(--text-muted); font-size: 1.15rem; margin-top: 0.75rem; max-width: 580px; margin-inline: auto; }
+
+    section { animation: slideUp 0.7s ease-out both; }
+    section + section { margin-top: 2.5rem; }
+    h2 { font-size: 0.85rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); margin-bottom: 1rem; }
+    h3.cfg { font-size: 1rem; font-weight: 600; margin: 1.75rem 0 0.5rem; }
+    p { color: #d4d4d8; }
+    .lead { font-size: 1.05rem; }
+    ul.points { list-style: none; margin-top: 1rem; display: grid; gap: 0.6rem; }
+    ul.points li { padding-left: 1.5rem; position: relative; color: #d4d4d8; }
+    ul.points li::before { content: '→'; position: absolute; left: 0; color: var(--primary); }
+
+    .card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 1.5rem; }
+    .step { display: flex; gap: 0.9rem; }
+    .step + .step { margin-top: 1.5rem; }
+    .step-num { flex-shrink: 0; width: 1.75rem; height: 1.75rem; border-radius: 9999px; background: rgba(139,92,246,0.12); border: 1px solid rgba(139,92,246,0.3); color: var(--primary); font-weight: 700; font-size: 0.85rem; display: flex; align-items: center; justify-content: center; }
+    .step-body { flex: 1; min-width: 0; }
+    .step-body h4 { font-size: 1rem; font-weight: 600; margin-bottom: 0.5rem; }
+    .step-body p { font-size: 0.95rem; color: var(--text-muted); margin-bottom: 0.6rem; }
+
+    .tabs { display: flex; gap: 0.25rem; border-bottom: 1px solid var(--border); margin-bottom: 1.25rem; }
+    .tab { padding: 0.6rem 1rem; background: none; border: none; border-bottom: 2px solid transparent; margin-bottom: -1px; color: var(--text-muted); font: inherit; font-weight: 600; font-size: 0.92rem; cursor: pointer; transition: color 0.2s; }
+    .tab:hover { color: var(--text); }
+    .tab[aria-selected="true"] { color: var(--text); border-bottom-color: var(--primary); }
+    .panels-container { display: grid; grid-template-columns: 1fr; grid-template-rows: 1fr; }
+    .panel { grid-column: 1; grid-row: 1; opacity: 0; visibility: hidden; pointer-events: none; transition: opacity 0.2s ease-out; }
+    .panel.active { opacity: 1; visibility: visible; pointer-events: auto; }
+
+    .code-block { position: relative; background: rgba(0,0,0,0.35); border: 1px solid var(--border); border-radius: 10px; }
+    .code-block pre { margin: 0; padding: 0.9rem 3rem 0.9rem 1rem; overflow-x: auto; }
+    .code-block code { font-size: 0.83rem; color: #e4e4e7; white-space: pre; }
+    .code-block .k { color: #93c5fd; }
+    .code-block .s { color: #86efac; }
+    .code-block .e { color: #d8b4fe; }
+    .code-block .c { color: #71717a; font-style: italic; }
+    .btn-copy { position: absolute; top: 0.55rem; right: 0.55rem; background: rgba(255,255,255,0.04); border: 1px solid var(--border); cursor: pointer; color: var(--text-muted); padding: 0.3rem; border-radius: 6px; display: flex; transition: all 0.2s; }
+    .btn-copy:hover { color: var(--text); background: rgba(255,255,255,0.08); }
+    .btn-copy.success { color: var(--success); border-color: var(--success); }
+
+    .links { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.75rem; }
+    .link-card { display: block; background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 1rem 1.1rem; transition: all 0.2s; }
+    .link-card:hover { border-color: rgba(139,92,246,0.4); transform: translateY(-2px); text-decoration: none; }
+    .link-card .t { color: var(--text); font-weight: 600; font-size: 0.95rem; }
+    .link-card .d { color: var(--text-muted); font-size: 0.82rem; margin-top: 0.15rem; }
+
+    footer { text-align: center; padding: 3.5rem 0 2rem; color: var(--text-muted); font-size: 0.85rem; }
+
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes slideUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+    section:nth-of-type(1) { animation-delay: 0.05s; }
+    section:nth-of-type(2) { animation-delay: 0.15s; }
+    section:nth-of-type(3) { animation-delay: 0.25s; }
+    section:nth-of-type(4) { animation-delay: 0.35s; }
+    @media (max-width: 560px) { h1 { font-size: 2.1rem; } .links { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="badge">AETHERPAK</div>
+      <h1>Self-hosted Flatpak repos, simplified</h1>
+      <p class="tagline">AetherPak makes it easy for OSS Linux desktop application maintainers to build and host self-managed, distributed Flatpak repositories.</p>
+    </header>
+
+    <main>
+    <section>
+      <h2>What it is</h2>
+      <p class="lead">Serving a static OSTree repository from a simple web server or static host involves transferring hundreds of small, separate file objects. This results in slow client-side installations and trips provider request limits. AetherPak addresses this with a flexible, hybrid OCI-static hosting model:</p>
+      <ul class="points">
+        <li><strong>Static Control Plane:</strong> Host the lightweight JSON repository index, landing installer pages, signing keys, and <code>.flatpakref</code> configurations on <em>any</em> static web host (GitHub Pages, GitLab Pages, Netlify, Cloudflare Pages, S3, or self-hosted HTTP).</li>
+        <li><strong>OCI Data Plane:</strong> Host the compiled Flatpak binary layers (blobs) as standard container images on <em>any</em> OCI-compliant registry (GitHub Container Registry (GHCR), Docker Hub, Quay.io, or self-hosted registries).</li>
+        <li><strong>GPG signing:</strong> Support for GPG-signed repositories to authenticate binaries (compatible with Flatpak client versions 1.17+).</li>
+        <li><strong>App Stream &amp; Catalog Integration:</strong> Generates and exposes full app metadata so that once your repository is added, users can easily discover, install, and update your apps directly from Linux software catalogs like GNOME Software and KDE Discover.</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>Core Projects</h2>
+      <div class="links">
+        <a class="link-card" href="https://aetherpak.github.io/actions">
+          <div class="t">AetherPak Actions</div>
+          <div class="d">GitHub Actions integration to compile Flatpaks and coordinate repository deploys.</div>
+        </a>
+        <a class="link-card" href="https://aetherpak.github.io/cli">
+          <div class="t">AetherPak CLI</div>
+          <div class="d">Zero-dependency Go CLI that handles builder sandboxing, change planning, registry pushing, and site generation.</div>
+        </a>
+      </div>
+    </section>
+
+    <section>
+      <h2>Quick Start</h2>
+      <div class="card">
+        <div class="tabs" role="tablist">
+          <button class="tab" role="tab" data-tab="quick-actions" aria-selected="true">GitHub Actions</button>
+          <button class="tab" role="tab" data-tab="quick-cli" aria-selected="false">AetherPak CLI</button>
+        </div>
+
+        <div class="panels-container">
+          <div class="panel active" data-tab="quick-actions">
+            <p style="margin-bottom: 0.75rem;">To publish a Flatpak application automatically on push, create <code>.github/workflows/publish.yml</code> in your repository:</p>
+            <div class="code-block">
+              <pre><code>name: Publish Flatpak
+on: { push: { branches: [main] } }
+permissions:
+  contents: read
+  packages: write
+  pages: write
+  id-token: write
+jobs:
+  publish:
+    uses: aetherpak/actions/.github/workflows/publish.yml@v3
+    with:
+      manifest-path: org.example.App.json
+    secrets:
+      gpg-private-key: ${{ secrets.AETHERPAK_GPG_KEY }}</code></pre>
+              <button class="btn-copy" title="Copy" aria-label="Copy" onclick="copyBlock(this)"></button>
+            </div>
+          </div>
+
+          <div class="panel" data-tab="quick-cli">
+            <p style="margin-bottom: 0.75rem;">AetherPak CLI compiles manifests, pushes layers, and builds indexes. Run a release flow locally or in any CI runner:</p>
+            <div class="code-block">
+              <pre><code># Run a complete build, push, and site reconcile sequence
+aetherpak release --base-sha HEAD~1
+
+# Re-build static landing pages and indexes from GHCR state
+aetherpak build-site --pages-url https://flatpak.example.com</code></pre>
+              <button class="btn-copy" title="Copy" aria-label="Copy" onclick="copyBlock(this)"></button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>Learn more</h2>
+      <div class="links">
+        <a class="link-card" href="https://aetherpak.github.io/actions"><div class="t">Actions Project</div><div class="d">View actions documentation and setup guides</div></a>
+        <a class="link-card" href="https://aetherpak.github.io/cli"><div class="t">CLI Project</div><div class="d">Explore CLI commands, usage, and compilation docs</div></a>
+        <a class="link-card" href="https://aetherpak.github.io/actions-demo/"><div class="t">Single-App Demo</div><div class="d">Example repository landing page deployed by AetherPak</div></a>
+        <a class="link-card" href="https://github.com/aetherpak/actions-demo"><div class="t">Demo Repository</div><div class="d">A template repository containing a sample workflow setup</div></a>
+      </div>
+    </section>
+    </main>
+
+    <footer>
+      <p>AetherPak &bull; MIT Licensed &bull; Compatible with any static host &amp; OCI registry</p>
+      <p style="margin-top: 0.5rem; font-size: 0.8rem;">
+        <a href="https://aetherpak.github.io/actions" style="color: var(--text-muted);">Actions</a> &bull; 
+        <a href="https://aetherpak.github.io/cli" style="color: var(--text-muted);">CLI</a>
+      </p>
+    </footer>
+  </div>
+
+  <script>
+    function copyBlock(btn) {
+      const code = btn.parentElement.querySelector('code').innerText;
+      navigator.clipboard.writeText(code).then(() => {
+        btn.classList.add('success');
+        setTimeout(() => btn.classList.remove('success'), 1500);
+      });
+    }
+
+    document.querySelectorAll('.tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        const tabs = tab.closest('.tabs');
+        tabs.querySelectorAll('.tab').forEach(t => t.setAttribute('aria-selected', String(t === tab)));
+        const card = tabs.closest('.card');
+        const panelsContainer = card.querySelector('.panels-container');
+        if (panelsContainer) {
+          Array.from(panelsContainer.children).forEach(p => {
+            p.classList.toggle('active', p.dataset.tab === tab.dataset.tab);
+          });
+        }
+      });
+    });
+
+    // Minimal, dependency-free highlighter for the YAML/shell snippets.
+    function esc(s) { return s.replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c])); }
+    function highlight(text) {
+      return text.split('\n').map(line => {
+        const m = line.match(/(^|\s)(#.*)$/);
+        const comment = m ? m[2] : '';
+        const code = m ? line.slice(0, line.length - comment.length) : line;
+        const h = esc(code)
+          .replace(/^(\s*(?:-\s*)?)([\w.-]+)(:)/, "$1<span class='k'>$2</span>$3")
+          .replace(/(\$\{\{[^}]*\}\})/g, "<span class='e'>$1</span>")
+          .replace(/("[^"]*")/g, "<span class='s'>$1</span>");
+        return comment ? h + "<span class='c'>" + esc(comment) + "</span>" : h;
+      }).join('\n');
+    }
+    document.querySelectorAll('.code-block code').forEach(c => { c.innerHTML = highlight(c.textContent); });
+
+    const ICON = '<svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>';
+    document.querySelectorAll('.btn-copy').forEach(b => { b.innerHTML = ICON; });
+  </script>
+</body>
+</html>
