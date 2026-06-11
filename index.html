@@ -81,6 +81,149 @@
     section:nth-of-type(3) { animation-delay: 0.25s; }
     section:nth-of-type(4) { animation-delay: 0.35s; }
     @media (max-width: 560px) { h1 { font-size: 2.1rem; } .links { grid-template-columns: 1fr; } }
+
+    .preview { display: block; margin-top: 1rem; border: 1px solid var(--border); border-radius: 14px; overflow: hidden; box-shadow: 0 12px 40px rgba(0,0,0,0.4), 0 0 30px rgba(139,92,246,0.06); transition: border-color 0.2s; }
+    .preview:hover { border-color: rgba(139,92,246,0.4); }
+    .preview img { display: block; width: 100%; height: auto; }
+
+    dialog.modal { inset: 0; margin: auto; max-width: 560px; width: calc(100% - 2rem); max-height: calc(100vh - 2rem); max-height: calc(100dvh - 2rem); overflow-y: auto; overscroll-behavior: contain; background: var(--card); color: var(--text); border: 1px solid var(--border); border-radius: 16px; padding: 1.5rem; box-shadow: 0 20px 60px rgba(0,0,0,0.5); }
+    dialog.modal::backdrop { background: rgba(9,9,11,0.7); backdrop-filter: blur(2px); }
+    .modal-x { background: none; border: none; color: var(--text-muted); font-size: 1.4rem; line-height: 1; cursor: pointer; padding: 0 0.35rem; border-radius: 6px; }
+    .modal-x:hover { color: var(--text); background: rgba(255,255,255,0.06); }
+
+    /* Carousel Modal styles */
+    dialog.carousel-modal {
+      max-width: 650px;
+      width: calc(100% - 2rem);
+      max-height: 90vh;
+      max-height: 90dvh;
+      padding: 0.5rem;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      background: var(--card);
+      overflow: hidden;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    }
+    .carousel-container {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+    }
+    .carousel-close {
+      position: absolute;
+      top: 0.5rem;
+      right: 0.5rem;
+      z-index: 20;
+      background: rgba(24, 24, 27, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: var(--text);
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+      transition: all 0.2s ease;
+      user-select: none;
+    }
+    .carousel-close:hover {
+      background: var(--primary);
+      border-color: var(--primary);
+    }
+    .carousel-viewport {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #0d0d0f;
+      border-radius: 10px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      width: 100%;
+    }
+    .carousel-slides {
+      width: 100%;
+      display: flex;
+    }
+    .carousel-slide {
+      display: none;
+      width: 100%;
+      align-items: center;
+      justify-content: center;
+    }
+    .carousel-slide.active {
+      display: flex;
+    }
+    .carousel-slide img {
+      width: auto;
+      max-width: 100%;
+      height: auto;
+      max-height: 82vh;
+      max-height: 82dvh;
+      object-fit: contain;
+      display: block;
+    }
+    .carousel-nav {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(24, 24, 27, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: var(--text);
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10;
+      font-size: 1.2rem;
+      transition: all 0.25s ease;
+      user-select: none;
+    }
+    .carousel-nav:hover {
+      background: var(--primary);
+      border-color: var(--primary);
+      box-shadow: 0 0 10px var(--primary-glow);
+    }
+    .carousel-nav.prev { left: 1rem; }
+    .carousel-nav.next { right: 1rem; }
+    .carousel-footer {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-top: 0.75rem;
+    }
+    .carousel-dots {
+      display: flex;
+      gap: 0.5rem;
+    }
+    .carousel-dots .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--border);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .carousel-dots .dot:hover {
+      background: var(--text-muted);
+    }
+    .carousel-dots .dot.active {
+      background: var(--primary);
+      transform: scale(1.2);
+    }
+
+    /* "Ask Dosu" pill — fixed launcher that opens the AetherPak knowledge base in a new tab. */
+    .dosu-launcher { position: fixed; bottom: 1.25rem; right: 1.25rem; z-index: 50; display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.7rem 1.1rem; border: 1px solid rgba(139,92,246,0.45); border-radius: 9999px; background: linear-gradient(135deg, #7c3aed, #8b5cf6); color: #fff; font: inherit; font-weight: 600; font-size: 0.92rem; text-decoration: none; box-shadow: 0 6px 24px rgba(139,92,246,0.35), 0 0 0 1px rgba(0,0,0,0.2); transition: transform 0.18s ease, box-shadow 0.18s ease; animation: dosuPop 0.5s ease-out 0.6s both; }
+    .dosu-launcher:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(139,92,246,0.5), 0 0 0 1px rgba(0,0,0,0.2); text-decoration: none; }
+    .dosu-launcher:active { transform: translateY(0); }
+    .dosu-launcher svg { width: 17px; height: 17px; flex-shrink: 0; }
+    @keyframes dosuPop { from { opacity: 0; transform: translateY(16px) scale(0.9); } to { opacity: 1; transform: none; } }
+    @media (max-width: 560px) { .dosu-launcher { bottom: 1rem; right: 1rem; padding: 0.65rem 1rem; } }
   </style>
 </head>
 <body>
@@ -101,6 +244,12 @@
         <li><strong>GPG signing:</strong> Support for GPG-signed repositories to authenticate binaries (compatible with Flatpak client versions 1.17+).</li>
         <li><strong>App Stream &amp; Catalog Integration:</strong> Generates and exposes full app metadata so that once your repository is added, users can easily discover, install, and update your apps directly from Linux software catalogs like GNOME Software and KDE Discover.</li>
       </ul>
+    </section>
+
+    <section>
+      <h2>What your users get</h2>
+      <p style="margin-bottom: 1rem; color: #d4d4d8;">Every repository gets a landing page like this, with a one-click <code>.flatpakref</code> install button and copy-paste commands for each app and channel.</p>
+      <a class="preview" href="#" onclick="openCarousel(0); return false;" aria-label="Open screenshot carousel"><img src="preview.png" alt="Live AetherPak actions-demo registry page showing GNOME Sudoku with install commands" loading="lazy"></a>
     </section>
 
     <section>
@@ -182,6 +331,52 @@ aetherpak build-site --pages-url https://flatpak.example.com</code></pre>
     </footer>
   </div>
 
+  <!-- Ask Dosu: opens the AetherPak knowledge base Q&A in a new tab. -->
+  <a class="dosu-launcher" href="https://app.dosu.dev/99e2e465-c579-4a33-bfd9-ea17932b9d47/ask" target="_blank" rel="noopener" aria-label="Ask Dosu about AetherPak">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3v4M3 5h4M6 17v4M4 19h4M13 3l1.8 4.9L20 9.7l-5.2 1.8L13 16.4l-1.8-4.9L6 9.7l5.2-1.8z"></path></svg>
+    Ask Dosu
+  </a>
+
+  <dialog id="carousel-modal" class="modal carousel-modal">
+    <div class="carousel-container">
+      <button class="carousel-close" aria-label="Close" onclick="closeCarousel()">&times;</button>
+      <div class="carousel-viewport">
+        <button class="carousel-nav prev" aria-label="Previous image" onclick="prevSlide()">&#10094;</button>
+        <div class="carousel-slides">
+          <div class="carousel-slide active">
+            <img src="01-Demo-Dark.png" alt="Demo - Dark Theme" loading="lazy">
+          </div>
+          <div class="carousel-slide">
+            <img src="01-Demo-Light.png" alt="Demo - Light Theme" loading="lazy">
+          </div>
+          <div class="carousel-slide">
+            <img src="02-Lemonade-Dark.png" alt="Lemonade - Dark Theme" loading="lazy">
+          </div>
+          <div class="carousel-slide">
+            <img src="02-Lemonade-Light.png" alt="Lemonade - Light Theme" loading="lazy">
+          </div>
+          <div class="carousel-slide">
+            <img src="03-Stacklok-Dark.png" alt="Stacklok - Dark Theme" loading="lazy">
+          </div>
+          <div class="carousel-slide">
+            <img src="03-Stacklok-Light.png" alt="Stacklok - Light Theme" loading="lazy">
+          </div>
+        </div>
+        <button class="carousel-nav next" aria-label="Next image" onclick="nextSlide()">&#10095;</button>
+      </div>
+      <div class="carousel-footer">
+        <div class="carousel-dots">
+          <span class="dot active" onclick="setSlide(0)"></span>
+          <span class="dot" onclick="setSlide(1)"></span>
+          <span class="dot" onclick="setSlide(2)"></span>
+          <span class="dot" onclick="setSlide(3)"></span>
+          <span class="dot" onclick="setSlide(4)"></span>
+          <span class="dot" onclick="setSlide(5)"></span>
+        </div>
+      </div>
+    </div>
+  </dialog>
+
   <script>
     function copyBlock(btn) {
       const code = btn.parentElement.querySelector('code').innerText;
@@ -223,6 +418,76 @@ aetherpak build-site --pages-url https://flatpak.example.com</code></pre>
 
     const ICON = '<svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>';
     document.querySelectorAll('.btn-copy').forEach(b => { b.innerHTML = ICON; });
+
+    // Carousel script
+    let currentSlide = 0;
+    const slides = [
+      '01-Demo-Dark.png',
+      '01-Demo-Light.png',
+      '02-Lemonade-Dark.png',
+      '02-Lemonade-Light.png',
+      '03-Stacklok-Dark.png',
+      '03-Stacklok-Light.png'
+    ];
+
+    function openCarousel(startIndex = 0) {
+      const modal = document.getElementById('carousel-modal');
+      if (modal) {
+        currentSlide = startIndex;
+        updateCarousel();
+        modal.showModal();
+      }
+    }
+
+    function closeCarousel() {
+      const modal = document.getElementById('carousel-modal');
+      if (modal) {
+        modal.close();
+      }
+    }
+
+    function prevSlide() {
+      currentSlide = (currentSlide - 1 + slides.length) % slides.length;
+      updateCarousel();
+    }
+
+    function nextSlide() {
+      currentSlide = (currentSlide + 1) % slides.length;
+      updateCarousel();
+    }
+
+    function setSlide(index) {
+      currentSlide = index;
+      updateCarousel();
+    }
+
+    function updateCarousel() {
+      const slideElements = document.querySelectorAll('.carousel-slide');
+      slideElements.forEach((el, idx) => {
+        el.classList.toggle('active', idx === currentSlide);
+      });
+
+      const dotElements = document.querySelectorAll('.carousel-dots .dot');
+      dotElements.forEach((el, idx) => {
+        el.classList.toggle('active', idx === currentSlide);
+      });
+    }
+
+    document.addEventListener('keydown', e => {
+      const modal = document.getElementById('carousel-modal');
+      if (modal && modal.open) {
+        if (e.key === 'ArrowLeft') {
+          prevSlide();
+        } else if (e.key === 'ArrowRight') {
+          nextSlide();
+        }
+      }
+    });
+
+    // Click the backdrop (outside the dialog content) to close.
+    document.querySelectorAll('dialog.modal').forEach(d => {
+      d.addEventListener('click', e => { if (e.target === d) d.close(); });
+    });
   </script>
 </body>
 </html>
